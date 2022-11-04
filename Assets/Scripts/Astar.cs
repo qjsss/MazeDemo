@@ -11,7 +11,6 @@ public class Astar
     int []dx={0,1,0,-1};
     int []dy={-1,0,1,0};
       string s;
-      int fx,fy;
      public int[,] findPath(int [][]maze,MyTuple start_positon,MyTuple finish_position,ref bool initFindPath,ref bool findPathtrue,ref bool startFindPath)
     {
         // MyTupleCompare compare=new MyTupleCompare();
