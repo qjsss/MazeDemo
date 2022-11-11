@@ -4,38 +4,35 @@ using UnityEngine;
 using UnityEngine.UI;
 public class CameraManager : MonoBehaviour
 {
-    public Transform myCamera;
+    public Camera myCamera;
     public InputField RowInput;
     public InputField ColumnInput;
     public int wallWidth=1;
-//     private void Update() {
-//         float  mouseCenter = Input.GetAxis("Mouse ScrollWheel");
-// 21      if(mouseCenter <0  ) {        
-// 　　　　　　　　　　　//滑动限制
-// 24                 if (myCamera.fieldOfView <= maxView) {
-// 25                     c.fieldOfView += 10 * slideSpeed*Time.deltaTime;
-// 26                     if (c.fieldOfView >= maxView) {
-// 27                         c.fieldOfView = minView;
-// 28                     }
-// 29                 }     
-// 30          //mouseCenter >0 = 正数 往前滑动,放大镜头
-// 31         } else if (mouseCenter >0 ) {
-// 　　　　　　　　　　　　//滑动限制
-// 32                 if (c.fieldOfView >= minView) {
-// 33                         c.fieldOfView -= 10 * slideSpeed*             
-// 34                       Time.deltaTime;
-// 35                     if (c.fieldOfView <= minView) {
-// 36                         c.fieldOfView = maxView;
-// 37                     }
-// 38                  }      
-// 39          }
-//     }
+    public float mouseCenter;
+    public float maxView=90;
+    public float minView=30;
+
+    public float slideSpeed=20;
+    private void Update() {
+        mouseCenter = Input.GetAxis("Mouse ScrollWheel");
+        //copy and learn from https://www.cnblogs.com/alanshreck/p/13559303.html
+        if(mouseCenter<0){
+            if(myCamera.fieldOfView<=maxView){
+                myCamera.fieldOfView+=10*slideSpeed*Time.deltaTime;
+            }
+        }
+        else if(mouseCenter>0){
+            if(myCamera.fieldOfView>=minView){
+                myCamera.fieldOfView-=10*slideSpeed*Time.deltaTime;
+            }
+        }
+    }
     public void OnStartButtonClick()
     {
         int row=int.Parse(RowInput.text);
         int column=int.Parse(ColumnInput.text);
         Vector3 v3=new Vector3(row*(wallWidth+1)/2f,(row+column)*(wallWidth+1)/1.5f,column*(wallWidth+1)/2f);
-        myCamera.position=v3;
+        myCamera.transform.position=v3;
     }
     
 }
