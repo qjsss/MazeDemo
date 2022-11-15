@@ -75,6 +75,7 @@ public class MazeGenerator : MonoBehaviour
     }
     public void OnStartButtonClick()
     {   
+        drawMazeFinished=false;
         fx=-1;
         fy=-1;
         findPathtrue=false;
