@@ -5,16 +5,9 @@ using UnityEngine.UI;
 using System;
 public class MazeGenerator : MonoBehaviour
 {
+    #region Properties
     public int row,column,wallWidth;
     public Transform walls,Tile_regular,Tile_current;
-    // public class MyTuple{
-    //     public int x,y;
-    //     public MyTuple():this(0,0){}
-    //     public MyTuple(int x,int y){
-    //         this.x=x;
-    //         this.y=y;
-    //     }
-    // }
     int []dx={0,1,0,-1};
     int []dy={-1,0,1,0};
     const int west=1<<0;
@@ -44,161 +37,20 @@ public class MazeGenerator : MonoBehaviour
     Astar astar=new Astar();
     //astar
     bool drawPath=false;
-    // public class PriorityQueue
-    // {
-    //     int Compare(MyTuple x1,MyTuple x2)
-    //     {
-    //         return x1.x-x2.x;
-    //     }
-    //     public MyTuple[]heap;
-    //     public int size{get;private set;}
-    //     public PriorityQueue():this(200){}
-    //     // public PriorityQueue(int capacity):this(capacity,null){}
-    //     // public PriorityQueue(IComparer<T>comparer):this(200,null){}
-    //     // public PriorityQueue(int capacity,IComparer<T>comparer)
-    //     // {
-    //     //     heap=new T[capacity+1];
-    //     //     size=0;
-    //     //     this.comparer=(comparer==null)?Comparer<T>.Default:comparer;
-    //     // }
-    //     public PriorityQueue(int capacity)
-    //     {
-    //         heap=new MyTuple[capacity+1];
-    //         size=0;
-    //     }
-    //     public void push(MyTuple x)
-    //     {
-    //         if(size+1>heap.Length)Array.Resize(ref heap,heap.Length<<1+1);
-    //         int i=++size;
-    //         for(;i!=1&&Compare(x,heap[i>>1])<0;i>>=1)
-    //         {
-    //             heap[i]=heap[i>>1];
-    //         }
-    //         heap[i]=x;
-    //     }
-    //     public MyTuple pop()
-    //     {
-    //         if(size==0)throw new InvalidOperationException("优先队列为空");
-    //         MyTuple res=heap[1];
-    //         MyTuple t=heap[size--];
-    //         int p=1;
-    //         for(int s;p<<1<=size;p=s)
-    //         {
-    //             s=p<<1;
-    //             if(s+1<=size&&Compare(heap[s],heap[s+1])>0)s++;
-    //             if(Compare(t,heap[s])<0)break;
-    //             heap[p]=heap[s];
-    //         }
-    //         heap[p]=t;
-    //         return res;
-    //     }   
-    //     public MyTuple top()
-    //     {
-    //         return heap[1];
-    //     }
-    // }
-    // public class MyTupleCompare : IComparer<MyTuple>
-    // {
-    //     public int Compare(MyTuple x, MyTuple y)
-    //     {
-    //         // return new CaseInsensitiveComparer().Compare(x.x,x.x);
-    //         return x.x-y.x;
-    //     }
-    // }
-    
       PriorityQueue heap;
       int [,]dist;
       string s;
       int fx=-1,fy=-1;
       float time;
       public float interval;
-    //  public void findPath(MyTuple start_positon,MyTuple finish_position)
-    // {
-    //     // MyTupleCompare compare=new MyTupleCompare();
-         
-
-        
-    //     if(initFindPath==false)
-    //     {
-    //         initFindPath=true;
-    //         heap=new PriorityQueue(300);
-    //         dist=new int[row,column];
-    //          heap.push(new MyTuple(0,start_positon.x*column+start_positon.y));
-    //          for(int i=0;i<row;i++)
-    //             for(int j=0;j<row;j++)dist[i,j]=0x3f3f3f3f;
-    //         dist[start_positon.x,start_positon.y]=0;
-    //     }
-        
-        
-        
-
-    //     while(heap.size>0)
-    //     {
-    //         Debug.Log("heap size: "+heap.size);
-    //         int temp=heap.pop().y;
-
-    //         Debug.Log(temp/column+"   "+(temp%column));
-    //         MyTuple t=new MyTuple(temp/column,temp%column);
-    //         // draw(t);
-    //         if(t.x==finish_position.x&&t.y==finish_position.y)
-    //         {
-    //             Debug.Log(dist[finish_position.x,finish_position.y]);
-    //             findPathtrue=true;
-    //             for(int i=0;i<row;i++)
-    //             {
-    //                 s="";
-    //                 for(int j=0;j<column;j++)
-    //                 {
-    //                     s=s+dist[i,j].ToString()+" ";
-    //                 }
-    //                 Debug.Log(s);
-    //             }
-    //              fx=finish_position.x;
-    //              fy=finish_position.y;
-    //             while(fx!=0||fy!=0)
-    //             {
-    //                 for(int i=0;i<4;i++)
-    //                 {
-    //                     if((maze[fx][fy]&(1<<i))>0)
-    //                     {
-    //                         int nx=fx+dx[i],ny=fy+dy[i];
-    //                         if(dist[nx,ny]==dist[fx,fy]-1)
-    //                         {
-    //                             MyTuple tempt=new MyTuple(fx,fy);
-    //                             StartCoroutine(waitForDraw(tempt));
-    //                             // finishWait=false;
-    //                             // draw();
-    //                             fx=nx;
-    //                             fy=ny;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //             if(fx==0&&fy==0)draw(new MyTuple(start_positon.x,start_positon.y));
-    //             startFindPath=false;
-    //             return ;
-    //         }
-    //         for(int i=0;i<4;i++)
-    //         {
-    //             if((maze[t.x][t.y]&(1<<i))>0)
-    //             {
-    //                 int nx=t.x+dx[i],ny=t.y+dy[i];
-    //                 Debug.Log(t.x+" "+t.y+" go: "+nx+" "+ny);
-    //                 if(nx<0||nx>=row||ny<0||ny>=column)continue;
-    //                 if(dist[nx,ny]==0x3f3f3f3f)
-    //                 {
-    //                     int k=dist[nx,ny]=dist[t.x,t.y]+1;
-    //                     Debug.Log(t.x+" "+t.y+" push: "+nx+" "+ny);
-    //                     heap.push(new MyTuple(Math.Abs(nx-finish_position.x)+Math.Abs(ny-finish_position.y)+k,(nx)*column+ny));
-    //                 }
-    //             }
-    //         }
-
-    //     }
-    // }
+    
     public bool initFindPath=false;
     public bool startFindPath=false;
 
+    public bool drawMazeFinished;
+    #endregion Properties
+
+    #region ButtonEvent
     public void OnFindPathButtonClick()
     {
         startFindPath=true;
@@ -223,6 +75,8 @@ public class MazeGenerator : MonoBehaviour
     }
     public void OnStartButtonClick()
     {   
+        fx=-1;
+        fy=-1;
         findPathtrue=false;
         initFindPath=false;
         startCreate=false;
@@ -243,10 +97,7 @@ public class MazeGenerator : MonoBehaviour
         startCreate=true;
         InitializeMazeStructure();
     }
-    void Start()
-    {
-        
-    }
+    #endregion ButtonEvent
     
     void Update()
     {
@@ -254,13 +105,18 @@ public class MazeGenerator : MonoBehaviour
         {
             RB_Algorithm();
             if(!skip)
+            {
+                if(drawMazeFinished==false)
                 DrawEverything();
+            }
             else if(visitedCells>=row*column)
             {
+                if(drawMazeFinished==false)
                 DrawEverything();
             }
             if(visitedCells>=row*column)
             {
+                drawMazeFinished=true;
                 
                 // Astar astar=this.GetComponent<Astar>();
                 // astar.findPath(maze,new Astar.MyTuple(0,0),new Astar.MyTuple(row,column));
@@ -276,7 +132,6 @@ public class MazeGenerator : MonoBehaviour
                         fx=row-1;
                         fy=column-1;
                     }
-                    Debug.LogError("aaaaaaaaaaaaaaaaa");
                     time+=Time.deltaTime;
                     while(fx!=0||fy!=0)
                     {
@@ -288,10 +143,11 @@ public class MazeGenerator : MonoBehaviour
                                 if(dist[nx,ny]==dist[fx,fy]-1)
                                 {
                                     MyTuple tempt=new MyTuple(fx,fy);
-                                    Debug.LogError(fx+"  "+fy);
+                                    // Debug.LogError(fx+"  "+fy);
                                     if(time<=interval)break;
                                     time-=interval;
                                     draw(tempt);
+                                    drawBetweenTwo(tempt,new MyTuple(nx,ny));
                                     fx=nx;
                                     fy=ny;
                                 }
@@ -372,6 +228,7 @@ public class MazeGenerator : MonoBehaviour
         }
     }
     //draw the process of build a maze
+    #region Draw
     void DrawEverything()
     {
         // Draw Maze
@@ -442,9 +299,37 @@ public class MazeGenerator : MonoBehaviour
             }
         }
     }
-    // IEnumerator waitForDraw(MyTuple tuple)
-    // {
-    //     yield return new WaitForSeconds(2);
-    //     draw(tuple);
-    // }
+    public void drawBetweenTwo(MyTuple x,MyTuple y)
+    {
+        Debug.LogWarning(x.x+" "+x.y+"  ->  "+y.x+" "+y.y);
+        if(x.x+dx[1]==y.x&&x.y+dy[1]==y.y)drawBottom(x);
+        else if(x.x+dx[2]==y.x&&x.y+dy[2]==y.y)drawRight(x);
+        else if(x.x+dx[3]==y.x&&x.y+dy[3]==y.y)drawBottom(y);
+        else if(x.x+dx[0]==y.x&&x.y+dy[0]==y.y)drawRight(y);
+    }
+    public void drawBottom(MyTuple x)
+    {
+        Debug.LogWarning("bottom: "+x.x+" "+x.y);
+
+        for(int i=0;i<wallWidth;i++)
+        {
+            Vector3 v3=new Vector3((x.x+1)*(wallWidth+1)-1,0,x.y*(wallWidth+1)+i);
+            Debug.LogError(v3.x+" "+v3.z);
+            if(checkIfTilePosEmpty(v3))
+                Instantiate(Tile_current,v3,Quaternion.identity);
+        }
+    }
+    public void drawRight(MyTuple x)
+    {
+        Debug.LogWarning("right: "+x.x+" "+x.y);
+        for(int i=0;i<wallWidth;i++)
+        {
+            Vector3 v3=new Vector3(x.x*(wallWidth+1)+i,0,(x.y+1)*(wallWidth+1)-1);
+            Debug.LogError(v3.x+" "+v3.z);
+            if(checkIfTilePosEmpty(v3))
+                Instantiate(Tile_current,v3,Quaternion.identity);
+        }
+    }
+    #endregion Draw
+
 }

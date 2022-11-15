@@ -43,7 +43,7 @@ public class Astar
             // draw(t);
             if(t.x==finish_position.x&&t.y==finish_position.y)
             {
-                Debug.Log(dist[finish_position.x,finish_position.y]);
+                // Debug.Log(dist[finish_position.x,finish_position.y]);
                 findPathtrue=true;
                 for(int i=0;i<row;i++)
                 {
@@ -52,7 +52,7 @@ public class Astar
                     {
                         s=s+dist[i,j].ToString()+" ";
                     }
-                    Debug.Log(s);
+                    // Debug.Log(s);
                 }
                 //  fx=finish_position.x;
                 //  fy=finish_position.y;
@@ -84,7 +84,7 @@ public class Astar
                 if((maze[t.x][t.y]&(1<<i))>0)
                 {
                     int nx=t.x+dx[i],ny=t.y+dy[i];
-                    Debug.Log(t.x+" "+t.y+" go: "+nx+" "+ny);
+                    // Debug.Log(t.x+" "+t.y+" go: "+nx+" "+ny);
                     if(nx<0||nx>=row||ny<0||ny>=column)continue;
                     if(dist[nx,ny]==0x3f3f3f3f)
                     {
