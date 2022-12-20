@@ -31,9 +31,6 @@ public class MazeGenerator : MonoBehaviour
 
     public bool findPathtrue=false;
     Stack<MyTuple>path=new Stack<MyTuple>();
-    bool finishWait=false;
-    float passedTime=0f;
-    float targetTime=2f;
     Astar astar=new Astar();
     //astar
     bool drawPath=false;
@@ -99,7 +96,10 @@ public class MazeGenerator : MonoBehaviour
         InitializeMazeStructure();
     }
     #endregion ButtonEvent
-    
+    private void Start() {
+
+        MessageText.text="";    
+    }
     void Update()
     {
         if(startCreate)
