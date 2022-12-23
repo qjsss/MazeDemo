@@ -10,6 +10,10 @@ public class MyTuple{
             this.x=x;
             this.y=y;
         }
+        public void setTuple(int x,int y){
+            this.x=x;
+            this.y=y;
+        }
     }
 public class PriorityQueue
 {

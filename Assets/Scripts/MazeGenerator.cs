@@ -6,8 +6,10 @@ using System;
 public class MazeGenerator : MonoBehaviour
 {
     #region Properties
-    public int row,column,wallWidth;
+    //预制体
     public Transform walls,Tile_regular,Tile_current;
+    //算法所需
+    public int row,column,wallWidth;
     int []dx={0,1,0,-1};
     int []dy={-1,0,1,0};
     const int west=1<<0;
@@ -20,13 +22,21 @@ public class MazeGenerator : MonoBehaviour
     public Stack<MyTuple>stack=new Stack<MyTuple>();
     private List<Transform> previousCurrent = new List<Transform>();
     System.Random random=new System.Random();
+    MyTuple start_point=new MyTuple(1,1),finish_point=new MyTuple(5,5);
 
+    //是否按下start
     bool startCreate;
+    //地图有多少行 多少列
     public InputField RowInput;
     public InputField ColumnInput;
+    //警告信息
     public Text MessageText;
+    //是否跳过生成地图
     public Toggle skipToggle;
     public Text PauseButtonText;
+    public InputField StartPointInput;
+    public InputField FinishPointInput;
+
     private bool skip;
 
     public bool findPathtrue=false;
@@ -34,13 +44,12 @@ public class MazeGenerator : MonoBehaviour
     Astar astar=new Astar();
     //astar
     bool drawPath=false;
-      PriorityQueue heap;
-      int [,]dist;
-      string s;
-      int fx=-1,fy=-1;
-      float time;
-      public float interval;
-    
+    int [,]dist;
+    int fx=-1,fy=-1;
+    float time;
+    //显示路径的间隔时间
+    public float interval;
+    //是否初始化A*算法
     public bool initFindPath=false;
     public bool startFindPath=false;
 
@@ -48,9 +57,54 @@ public class MazeGenerator : MonoBehaviour
     #endregion Properties
 
     #region ButtonEvent
+    //startpointinput
+    public void On_SPI_ValueChanged(InputField inputField)
+    {
+        string a="";
+        int x=-1,y=-1;
+        foreach(char c in inputField.text)
+        {
+            Debug.Log(c+"   "+a);
+            if(c>='0'&&c<='9')a+=c;
+            else if(c==',')
+            {
+                x=int.Parse(a);
+                if(x<1||x>row)return ;
+                a="";
+            }
+        }
+        y=int.Parse(a);
+        if(y<1||y>column)return ;
+        if(x==-1)return ;
+        start_point.setTuple(x,y);
+        Debug.Log(x+"  "+y);    
+    }
+    public void On_FPI_ValueChanged(InputField inputField)
+    {
+        string a="";
+        int x=-1,y=-1;
+        foreach(char c in inputField.text)
+        {
+            Debug.Log(c+"   "+a);
+            if(c>='0'&&c<='9')a+=c;
+            else if(c==',')
+            {
+                x=int.Parse(a);
+                if(x<1||x>row)return ;
+                a="";
+            }
+        }
+        y=int.Parse(a);
+        if(y<1||y>column)return ;
+        if(x==-1)return ;
+        finish_point.setTuple(x,y);
+        Debug.Log(x+"  "+y);    
+    }
     public void OnFindPathButtonClick()
     {
         startFindPath=true;
+        Debug.LogWarning("FindPath button click");
+
     }
     public void OnPauseButtonClick()
     {   
@@ -72,6 +126,12 @@ public class MazeGenerator : MonoBehaviour
     }
     public void OnStartButtonClick()
     {   
+        row=int.Parse(RowInput.text);
+        column=int.Parse(ColumnInput.text);
+        StartPointInput.text="[1,1]";
+        FinishPointInput.text="["+RowInput.text+","+ColumnInput.text+"]";
+        ChangeStartPoint(1,1);
+        ChangeFinishPoint(row,column);
         drawMazeFinished=false;
         fx=-1;
         fy=-1;
@@ -90,12 +150,19 @@ public class MazeGenerator : MonoBehaviour
         }
         skip=skipToggle.isOn;
         MessageText.text="";
-        row=int.Parse(RowInput.text);
-        column=int.Parse(ColumnInput.text);
         startCreate=true;
         InitializeMazeStructure();
+        Debug.LogWarning("start button click");
     }
     #endregion ButtonEvent
+    public void ChangeStartPoint(int x ,int y)
+    {
+        start_point.setTuple(x,y);
+    }
+    public void ChangeFinishPoint(int x ,int y)
+    {
+        finish_point.setTuple(x,y);
+    }
     private void Start() {
 
         MessageText.text="";    
@@ -119,22 +186,28 @@ public class MazeGenerator : MonoBehaviour
             {
                 drawMazeFinished=true;
                 
+                // if(startFindPath)Debug.LogWarning("startFindPath = true");
                 // Astar astar=this.GetComponent<Astar>();
                 // astar.findPath(maze,new Astar.MyTuple(0,0),new Astar.MyTuple(row,column));
                 if(startFindPath&&findPathtrue==false)
                 {
-                    dist=astar.findPath(maze,new MyTuple(0,0),new MyTuple(row-1,column-1),ref initFindPath,ref findPathtrue,ref startFindPath);
+                        Debug.Log(start_point.x+" "+start_point.y);
+                        Debug.Log(finish_point.x+" "+finish_point.y);
+                    dist=astar.findPath(maze,
+                    new MyTuple(finish_point.x-1,finish_point.y-1),
+                    new MyTuple(start_point.x-1,start_point.y-1),
+                    ref initFindPath,ref findPathtrue,ref startFindPath);
                     drawPath=false;
                 }
                 else if(findPathtrue&&drawPath==false)
                 {
                     if(fx==-1&&fy==-1)
                     {
-                        fx=row-1;
-                        fy=column-1;
+                        fx=start_point.x-1;
+                        fy=start_point.y-1;
                     }
                     time+=Time.deltaTime;
-                    while(fx!=0||fy!=0)
+                    while(fx!=finish_point.x-1||fy!=finish_point.y-1)
                     {
                         for(int i=0;i<4;i++)
                         {
@@ -156,9 +229,9 @@ public class MazeGenerator : MonoBehaviour
                         }
                         if(time<interval)break;
                     }
-                    if(fx==0&&fy==0&&time>=interval)
+                    if(fx==finish_point.x-1&&fy==finish_point.y-1&&time>=interval)
                     {
-                        draw(new MyTuple(0,0));
+                        draw(new MyTuple(finish_point.x-1,finish_point.y-1));
                         drawPath=true;
                         time=0;
                     }
@@ -302,7 +375,7 @@ public class MazeGenerator : MonoBehaviour
     }
     public void drawBetweenTwo(MyTuple x,MyTuple y)
     {
-        Debug.LogWarning(x.x+" "+x.y+"  ->  "+y.x+" "+y.y);
+        // Debug.LogWarning(x.x+" "+x.y+"  ->  "+y.x+" "+y.y);
         if(x.x+dx[1]==y.x&&x.y+dy[1]==y.y)drawBottom(x);
         else if(x.x+dx[2]==y.x&&x.y+dy[2]==y.y)drawRight(x);
         else if(x.x+dx[3]==y.x&&x.y+dy[3]==y.y)drawBottom(y);
@@ -310,23 +383,23 @@ public class MazeGenerator : MonoBehaviour
     }
     public void drawBottom(MyTuple x)
     {
-        Debug.LogWarning("bottom: "+x.x+" "+x.y);
+        // Debug.LogWarning("bottom: "+x.x+" "+x.y);
 
         for(int i=0;i<wallWidth;i++)
         {
             Vector3 v3=new Vector3((x.x+1)*(wallWidth+1)-1,0,x.y*(wallWidth+1)+i);
-            Debug.LogError(v3.x+" "+v3.z);
+            // Debug.LogError(v3.x+" "+v3.z);
             if(checkIfTilePosEmpty(v3))
                 Instantiate(Tile_current,v3,Quaternion.identity);
         }
     }
     public void drawRight(MyTuple x)
     {
-        Debug.LogWarning("right: "+x.x+" "+x.y);
+        // Debug.LogWarning("right: "+x.x+" "+x.y);
         for(int i=0;i<wallWidth;i++)
         {
             Vector3 v3=new Vector3(x.x*(wallWidth+1)+i,0,(x.y+1)*(wallWidth+1)-1);
-            Debug.LogError(v3.x+" "+v3.z);
+            // Debug.LogError(v3.x+" "+v3.z);
             if(checkIfTilePosEmpty(v3))
                 Instantiate(Tile_current,v3,Quaternion.identity);
         }
