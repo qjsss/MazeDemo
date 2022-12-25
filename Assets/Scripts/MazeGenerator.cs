@@ -58,7 +58,7 @@ public class MazeGenerator : MonoBehaviour
     public bool drawMazeFinished;
     MyTuple tuple1=new MyTuple(-1,-1);
     Stack<MyTuple>shortest_path=new Stack<MyTuple>();
-
+    private bool had_show_visited_path;
     #endregion Properties
 
     #region ButtonEvent
@@ -220,10 +220,12 @@ public class MazeGenerator : MonoBehaviour
                         }
                         Debug.Log(s);
                     }
+                    had_show_visited_path=false;
                     drawPath=false;
                 }
                 else if(findPathtrue&&drawPath==false)
                 {
+                    if(had_show_visited_path==false)
                     show_visited_path();
                     show_shortest_path();
                 }
@@ -353,36 +355,39 @@ public class MazeGenerator : MonoBehaviour
     }
     private void show_visited_path()
     {
-
-            // if(sx==-1&&sy==-1)
-            // {
-            //     sx=start_point.x-1;
-            //     sy=start_point.y-1;
-            // }
-            // // time+=Time.deltaTime;
-            // while(sx!=finish_point.x-1||sy!=finish_point.y-1)
-            // {
-            //     for(int i=0;i<4;i++)
-            //     {
-            //         if((maze[sx][sy]&(1<<i))>0)
-            //         {
-            //             int nx=sx+dx[i],ny=sy+dy[i];
-            //             if(dist[nx,ny]==dist[sx,sy]-1)
-            //             {
-            //                 MyTuple tempt=new MyTuple(sx,sy);
-            //                 shortest_path.Push(tempt);
-            //                 sx=nx;
-            //                 sy=ny;
-            //             }
-            //         }
-            //     }
-            // }
-            // if(sx==finish_point.x-1&&sy==finish_point.y-1&&time>=interval)
-            // {
-            //     MyTuple tuple=new MyTuple(finish_point.x-1,finish_point.y-1);
-            //     shortest_path.Push(tuple);
-            // }
-
+            had_show_visited_path=true;
+            Stack<MyTuple>visited_path=new Stack<MyTuple>();
+            if(sx==-1&&sy==-1)
+            {
+                sx=start_point.x-1;
+                sy=start_point.y-1;
+                visited_path.Push(new MyTuple(sx,sy));
+            }
+            // time+=Time.deltaTime;
+            while(visited_path.Count>0)
+            {
+                MyTuple t=visited_path.Peek();
+                visited_path.Pop();
+                for(int i=0;i<4;i++)
+                {
+                    if((maze[t.x][t.y]&(1<<i))>0)
+                    {
+                        int nx=t.x+dx[i],ny=t.y+dy[i];
+                        if((dist[nx,ny]==dist[t.x,t.y]+1)
+                        &&(dist[nx,ny]+Math.Abs(nx-finish_point.x+1)+Math.Abs(ny-finish_point.y+1))
+                        <=dist[finish_point.x-1,finish_point.y-1])
+                        {
+                            MyTuple tempt=new MyTuple(nx,ny);
+                            if(nx!=finish_point.x-1||ny!=finish_point.y-1)
+                            draw_blue(tempt);
+                            drawBetweenTwo(tempt,t,"blue");
+                            visited_path.Push(tempt);
+                            sx=nx;
+                            sy=ny;
+                        }
+                    }
+                }
+            }
     }
     //draw the process of build a maze
     
@@ -469,15 +474,27 @@ public class MazeGenerator : MonoBehaviour
             }
         }
     }
-    public void drawBetweenTwo(MyTuple x,MyTuple y)
+    public void draw_blue(MyTuple t)
+    {
+        for(int i=0;i<wallWidth;i++)
+        {
+            for(int j=0;j<wallWidth;j++)
+            {
+                Vector3 v3=new Vector3(t.x*(wallWidth+1)+i,0,t.y*(wallWidth+1)+j);
+                if(checkIfTilePosEmpty(v3))
+                Instantiate(blue_regular,v3,Quaternion.identity);
+            }
+        }
+    }
+    public void drawBetweenTwo(MyTuple x,MyTuple y,string color="red")
     {
         // Debug.LogWarning(x.x+" "+x.y+"  ->  "+y.x+" "+y.y);
-        if(x.x+dx[1]==y.x&&x.y+dy[1]==y.y)drawBottom(x);
-        else if(x.x+dx[2]==y.x&&x.y+dy[2]==y.y)drawRight(x);
-        else if(x.x+dx[3]==y.x&&x.y+dy[3]==y.y)drawBottom(y);
-        else if(x.x+dx[0]==y.x&&x.y+dy[0]==y.y)drawRight(y);
+        if(x.x+dx[1]==y.x&&x.y+dy[1]==y.y)drawBottom(x,color);
+        else if(x.x+dx[2]==y.x&&x.y+dy[2]==y.y)drawRight(x,color);
+        else if(x.x+dx[3]==y.x&&x.y+dy[3]==y.y)drawBottom(y,color);
+        else if(x.x+dx[0]==y.x&&x.y+dy[0]==y.y)drawRight(y,color);
     }
-    public void drawBottom(MyTuple x)
+    public void drawBottom(MyTuple x,string color="red")
     {
         // Debug.LogWarning("bottom: "+x.x+" "+x.y);
 
@@ -486,10 +503,13 @@ public class MazeGenerator : MonoBehaviour
             Vector3 v3=new Vector3((x.x+1)*(wallWidth+1)-1,0,x.y*(wallWidth+1)+i);
             // Debug.LogError(v3.x+" "+v3.z);
             if(checkIfTilePosEmpty(v3))
-                Instantiate(Tile_current,v3,Quaternion.identity);
+                if(color=="red")
+                    Instantiate(Tile_current,v3,Quaternion.identity);
+                else if(color=="blue")
+                    Instantiate(blue_regular,v3,Quaternion.identity);
         }
     }
-    public void drawRight(MyTuple x)
+    public void drawRight(MyTuple x,string color="red")
     {
         // Debug.LogWarning("right: "+x.x+" "+x.y);
         for(int i=0;i<wallWidth;i++)
@@ -497,7 +517,10 @@ public class MazeGenerator : MonoBehaviour
             Vector3 v3=new Vector3(x.x*(wallWidth+1)+i,0,(x.y+1)*(wallWidth+1)-1);
             // Debug.LogError(v3.x+" "+v3.z);
             if(checkIfTilePosEmpty(v3))
-                Instantiate(Tile_current,v3,Quaternion.identity);
+                if(color=="red")
+                    Instantiate(Tile_current,v3,Quaternion.identity);
+                else if(color=="blue")
+                    Instantiate(blue_regular,v3,Quaternion.identity);
         }
     }
     #endregion Draw

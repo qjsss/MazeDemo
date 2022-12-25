@@ -1188,6 +1188,7 @@ MonoBehaviour:
   interval: 0.2
   initFindPath: 0
   startFindPath: 0
+  fill_shortest_path_stack: 0
   drawMazeFinished: 0
 --- !u!1 &575200793
 GameObject:
@@ -1794,10 +1795,10 @@ RectTransform:
   m_Father: {fileID: 2114721063}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 691.5, y: -290.7}
-  m_SizeDelta: {x: 39.696693, y: 37.936737}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -108.8, y: -293.2}
+  m_SizeDelta: {x: 39.696716, y: 37.936737}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &884678949
 MonoBehaviour:
@@ -3290,10 +3291,10 @@ RectTransform:
   m_Father: {fileID: 2114721063}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 690.6, y: -245}
-  m_SizeDelta: {x: 39.696693, y: 37.936737}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -108.9, y: -245}
+  m_SizeDelta: {x: 39.696716, y: 37.936737}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1676335624
 MonoBehaviour:
