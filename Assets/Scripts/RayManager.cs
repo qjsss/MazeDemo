@@ -10,13 +10,15 @@ public class RayManager : MonoBehaviour
     private bool startSelectFinishPoint;
     public InputField StartPointInput;
     public InputField FinishPointInput;
-    public MazeGenerator mazeGenerator;
+    private MazeGenerator mazeGenerator;
+    public GameObject Panel;
     public int wallWidth;
     // Start is called before the first frame update
     void Start()
     {
         mazeGenerator=GameObject.Find("Main Camera").GetComponent<MazeGenerator>();
         wallWidth=mazeGenerator.wallWidth;
+        Panel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -27,6 +29,7 @@ public class RayManager : MonoBehaviour
             Ray ray=Camera.main.ScreenPointToRay(Input.mousePosition);
             if(Physics.Raycast(ray,out hitInfo))
             {
+                Panel.SetActive(false);
                 ChangeInputField(StartPointInput);
             }
             startSelectStartPoint=false;
@@ -36,6 +39,7 @@ public class RayManager : MonoBehaviour
             Ray ray=Camera.main.ScreenPointToRay(Input.mousePosition);
             if(Physics.Raycast(ray,out hitInfo))
             {
+                Panel.SetActive(false);
                 ChangeInputField(FinishPointInput);
             }
             startSelectFinishPoint=false;
@@ -62,10 +66,12 @@ public class RayManager : MonoBehaviour
     }
     public void OnSelectStartPointClick()
     {
+        Panel.SetActive(true);
         startSelectStartPoint=true;
     }
     public void OnSelectFinishPointClick()
     {
+        Panel.SetActive(true);
         startSelectFinishPoint=true;
     }
 }
